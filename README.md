@@ -9,10 +9,10 @@ This project is a port of [HtmlAgilityPack 1.4.0 branch](https://htmlagilitypack
 + **.NET 4.5.1** Fully
 + **.NET Standard 1.3**
  - [ ] `HtmlCmdLine`. 'Cause `Environment.GetCommandLineArgs()` is not included.
- - [x] `HtmlNodeNavigator` ([partially](src/DevZH.HtmlAgilityPack/HtmlAgilityPack.cs#L723-729))
+ - [x] `HtmlNodeNavigator` ([partially](src/DevZH.HtmlAgilityPack/HtmlNodeNavigator.cs#L723-729))
  - [ ] `HtmlWeb`. 'Cause `System.Xml.Xsl` is not included.
 + **.NET Standard 1.5**
  - [x] `HtmlCmdLine`
- - [x] `HtmlNodeNavigator` ([partially](src/DevZH.HtmlAgilityPack/HtmlAgilityPack.cs#L723-729))
+ - [x] `HtmlNodeNavigator` ([partially](src/DevZH.HtmlAgilityPack/HtmlNodeNavigator.cs#L723-729))
  - [ ] `HtmlWeb`. 'Cause `System.Xml.Xsl` is not included.
 
