@@ -1,0 +1,52 @@
+﻿{
+  "version": "1.4.9-*",
+  "description": "HtmlAgilityPack for .NET Core",
+  "authors": [ "杜晓宇" ],
+  "packOptions": {
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/noliar/HtmlAgilityPack.NetCore"
+    },
+    "tags": [
+      "HTML",
+      "parse",
+      "crawler",
+      "spider",
+      "linq",
+      "netcore"
+    ],
+    "projectUrl": "https://github.com/noliar/HtmlAgilityPack.NetCore",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+  },
+  "buildOptions": {
+    "nowarn": [
+      "CS0618"
+    ]
+  },
+  "dependencies": {
+    "NETStandard.Library": "1.5.0-*"
+  },
+  "frameworks": {
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Xml": {
+          "type": "build"
+        }
+      }
+    },
+    "netstandard1.3": {
+      "dependencies": {
+        "System.Collections.NonGeneric": "4.0.1-*",
+        "System.Diagnostics.TraceSource": "4.0.0-*",
+        "System.Xml.XPath": "4.0.1-*"
+      }
+    },
+    "netstandard1.5": {
+      "dependencies": {
+        "System.Collections.NonGeneric": "4.0.1-*",
+        "System.Diagnostics.TraceSource": "4.0.0-*",
+        "System.Xml.XPath": "4.0.1-*"
+      }
+    }
+  }
+}
