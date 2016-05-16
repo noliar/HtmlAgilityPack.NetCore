@@ -9,13 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 		NuGet.Config = NuGet.Config
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DevZH.HtmlAgilityPack", "src\DevZH.HtmlAgilityPack\DevZH.HtmlAgilityPack.xproj", "{3216245F-A36D-4E33-A7AC-9CAB96601F27}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{31B98850-4AE1-4A8C-8C73-A2CF01FDD9C8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HelloMvc", "samples\HelloMvc\HelloMvc.xproj", "{E5BDE977-3F5C-4310-8A23-B5694A869C88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,28 +42,11 @@ Global
 		{3216245F-A36D-4E33-A7AC-9CAB96601F27}.Release|x64.Build.0 = Release|Any CPU
 		{3216245F-A36D-4E33-A7AC-9CAB96601F27}.Release|x86.ActiveCfg = Release|Any CPU
 		{3216245F-A36D-4E33-A7AC-9CAB96601F27}.Release|x86.Build.0 = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|ARM.Build.0 = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|x64.Build.0 = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Debug|x86.Build.0 = Debug|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|ARM.ActiveCfg = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|ARM.Build.0 = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|x64.ActiveCfg = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|x64.Build.0 = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|x86.ActiveCfg = Release|Any CPU
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3216245F-A36D-4E33-A7AC-9CAB96601F27} = {2BD58010-3E23-42D4-BD0C-726A5FA8E77B}
-		{E5BDE977-3F5C-4310-8A23-B5694A869C88} = {31B98850-4AE1-4A8C-8C73-A2CF01FDD9C8}
 	EndGlobalSection
 EndGlobal
