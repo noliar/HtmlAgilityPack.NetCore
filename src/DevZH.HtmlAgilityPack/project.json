@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.4.9-*",
+  "version": "1.4.9.1-*",
   "description": "HtmlAgilityPack for .NET Core",
   "authors": [ "杜晓宇" ],
   "packOptions": {
