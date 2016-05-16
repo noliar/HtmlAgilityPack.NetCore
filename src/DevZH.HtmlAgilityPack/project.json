@@ -36,16 +36,22 @@
     },
     "netstandard1.3": {
       "dependencies": {
+        "Microsoft.Win32.Registry": "4.0.0-*",
         "System.Collections.NonGeneric": "4.0.1-*",
         "System.Diagnostics.TraceSource": "4.0.0-*",
-        "System.Xml.XPath": "4.0.1-*"
+        "System.Xml.XPath": "4.0.1-*",
+        "System.Xml.XPath.XmlDocument": "4.0.1-*",
+        "System.Xml.XmlDocument": "4.0.1-*"
       }
     },
     "netstandard1.5": {
       "dependencies": {
+        "Microsoft.Win32.Registry": "4.0.0-*",
         "System.Collections.NonGeneric": "4.0.1-*",
         "System.Diagnostics.TraceSource": "4.0.0-*",
-        "System.Xml.XPath": "4.0.1-*"
+        "System.Xml.XPath": "4.0.1-*",
+        "System.Xml.XPath.XmlDocument": "4.0.1-*",
+        "System.Xml.XmlDocument": "4.0.1-*"
       }
     }
   }

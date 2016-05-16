@@ -1,18 +1,22 @@
 // HtmlAgilityPack V1.0 - Simon Mourier <simon underscore mourier at hotmail dot com>
-#if NET451
 #region
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security;
-using System.Security.Permissions;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Xml.Xsl;
 using Microsoft.Win32;
+
+#if NET451
+using System.Security.Permissions;
+using System.Xml.Xsl;
+#endif
 
 #endregion
 
@@ -28,7 +32,7 @@ namespace HtmlAgilityPack
         /// <summary>
         /// Represents the method that will handle the PostResponse event.
         /// </summary>
-        public delegate void PostResponseHandler(HttpWebRequest request, HttpWebResponse response);
+        public delegate void PostResponseHandler(HttpRequestMessage request, HttpResponseMessage response);
 
         /// <summary>
         /// Represents the method that will handle the PreHandleDocument event.
@@ -38,7 +42,7 @@ namespace HtmlAgilityPack
         /// <summary>
         /// Represents the method that will handle the PreRequest event.
         /// </summary>
-        public delegate bool PreRequestHandler(HttpWebRequest request);
+        public delegate bool PreRequestHandler(HttpClientHandler handler, HttpRequestMessage request);
 
         #endregion
 
@@ -857,7 +861,7 @@ namespace HtmlAgilityPack
         #endregion
 
         #region Public Methods
-
+#if NET451
         /// <summary>
         /// Gets the MIME content type for a given path extension.
         /// </summary>
@@ -872,7 +876,11 @@ namespace HtmlAgilityPack
             }
             string contentType = "";
 
-            if (!SecurityManager.IsGranted(new RegistryPermission(PermissionState.Unrestricted)))
+            var permissionSet = new PermissionSet(PermissionState.None);
+            permissionSet.AddPermission(new RegistryPermission(PermissionState.Unrestricted));
+            bool isGranted = permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+
+            if (!isGranted)
             {
                 if (MimeTypes.ContainsKey(extension))
                     contentType = MimeTypes[extension];
@@ -880,7 +888,11 @@ namespace HtmlAgilityPack
                     contentType = def;
             }
 
-            if (!SecurityManager.IsGranted(new DnsPermission(PermissionState.Unrestricted)))
+            permissionSet = new PermissionSet(PermissionState.None);
+            permissionSet.AddPermission(new DnsPermission(PermissionState.Unrestricted));
+            isGranted = permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+
+            if (!isGranted)
             {
                 //do something.... not at full trust
                 try
@@ -910,7 +922,12 @@ namespace HtmlAgilityPack
                 return def;
             }
             string ext = "";
-            if (!SecurityManager.IsGranted(new RegistryPermission(PermissionState.Unrestricted)))
+
+            var permissionSet = new PermissionSet(PermissionState.None);
+            permissionSet.AddPermission(new RegistryPermission(PermissionState.Unrestricted));
+            bool isGranted = permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+
+            if (!isGranted)
             {
                 if (MimeTypes.ContainsValue(contentType))
                 {
@@ -920,8 +937,7 @@ namespace HtmlAgilityPack
                 }
                 return def;
             }
-
-            if (SecurityManager.IsGranted(new RegistryPermission(PermissionState.Unrestricted)))
+            else
             {
                 try
                 {
@@ -934,6 +950,7 @@ namespace HtmlAgilityPack
                     ext = def;
                 }
             }
+            
             return ext;
         }
 
@@ -1005,7 +1022,7 @@ namespace HtmlAgilityPack
             }
             return o;
         }
-
+#endif
         /// <summary>
         /// Gets an HTML document from an Internet resource and saves it to the specified file.
         /// </summary>
@@ -1023,7 +1040,7 @@ namespace HtmlAgilityPack
         /// <param name="path">The location of the file where you want to save the document.</param>
         /// <param name="proxy"></param>
         /// <param name="credentials"></param>
-        public void Get(string url, string path, WebProxy proxy, NetworkCredential credentials)
+        public void Get(string url, string path, IWebProxy proxy, ICredentials credentials)
         {
             Get(url, path, proxy, credentials, "GET");
         }
@@ -1037,8 +1054,14 @@ namespace HtmlAgilityPack
         public void Get(string url, string path, string method)
         {
             Uri uri = new Uri(url);
+#if NET451
             if ((uri.Scheme == Uri.UriSchemeHttps) ||
                 (uri.Scheme == Uri.UriSchemeHttp))
+#else
+                // Uri.UriSchemeHttps is internal. Bug or not completed?
+                if ((uri.Scheme == "https") ||
+                (uri.Scheme == "http"))
+#endif
             {
                 Get(uri, method, path, null, null, null);
             }
@@ -1056,11 +1079,17 @@ namespace HtmlAgilityPack
         /// <param name="credentials"></param>
         /// <param name="method">The HTTP method used to open the connection, such as GET, POST, PUT, or PROPFIND.</param>
         /// <param name="proxy"></param>
-        public void Get(string url, string path, WebProxy proxy, NetworkCredential credentials, string method)
+        public void Get(string url, string path, IWebProxy proxy, ICredentials credentials, string method)
         {
             Uri uri = new Uri(url);
+#if NET451
             if ((uri.Scheme == Uri.UriSchemeHttps) ||
                 (uri.Scheme == Uri.UriSchemeHttp))
+#else
+                // Uri.UriScheme* is internal. Bug or not completed?
+                if ((uri.Scheme == "https") ||
+                (uri.Scheme == "http"))
+#endif
             {
                 Get(uri, method, path, null, proxy, credentials);
             }
@@ -1106,7 +1135,7 @@ namespace HtmlAgilityPack
         {
             return Load(url, "GET");
         }
-
+#if NET451
         /// <summary>
         /// Gets an HTML document from an Internet resource.
         /// </summary>
@@ -1135,7 +1164,7 @@ namespace HtmlAgilityPack
 
             return Load(url, "GET", myProxy, myCreds);
         }
-
+#endif
         /// <summary>
         /// Loads an HTML document from an Internet resource.
         /// </summary>
@@ -1146,14 +1175,25 @@ namespace HtmlAgilityPack
         {
             Uri uri = new Uri(url);
             HtmlDocument doc;
+#if NET451
             if ((uri.Scheme == Uri.UriSchemeHttps) ||
                 (uri.Scheme == Uri.UriSchemeHttp))
+#else
+                // Uri.UriScheme* is internal. Bug or not completed?
+                if ((uri.Scheme == "https") ||
+                (uri.Scheme == "http"))
+#endif
             {
                 doc = LoadUrl(uri, method, null, null);
             }
             else
             {
+#if NET451
                 if (uri.Scheme == Uri.UriSchemeFile)
+#else
+                // Uri.UriScheme* is internal. Bug or not completed?
+                if (uri.Scheme == "file")
+#endif
                 {
                     doc = new HtmlDocument();
                     doc.OptionAutoCloseOnEnd = false;
@@ -1180,18 +1220,29 @@ namespace HtmlAgilityPack
         /// <param name="proxy">Proxy to use with this request</param>
         /// <param name="credentials">Credentials to use when authenticating</param>
         /// <returns>A new HTML document.</returns>
-        public HtmlDocument Load(string url, string method, WebProxy proxy, NetworkCredential credentials)
+        public HtmlDocument Load(string url, string method, IWebProxy proxy, ICredentials credentials)
         {
             Uri uri = new Uri(url);
             HtmlDocument doc;
+#if NET451
             if ((uri.Scheme == Uri.UriSchemeHttps) ||
                 (uri.Scheme == Uri.UriSchemeHttp))
+#else
+                // Uri.UriScheme* is internal. Bug or not completed?
+                if ((uri.Scheme == "https") ||
+                (uri.Scheme == "http"))
+#endif
             {
                 doc = LoadUrl(uri, method, proxy, credentials);
             }
             else
             {
+#if NET451
                 if (uri.Scheme == Uri.UriSchemeFile)
+#else
+                // Uri.UriScheme* is internal. Bug or not completed?
+                if (uri.Scheme == "file")
+#endif
                 {
                     doc = new HtmlDocument();
                     doc.OptionAutoCloseOnEnd = false;
@@ -1214,13 +1265,15 @@ namespace HtmlAgilityPack
         /// Loads an HTML document from an Internet resource and saves it to the specified XmlTextWriter.
         /// </summary>
         /// <param name="htmlUrl">The requested URL, such as "http://Myserver/Mypath/Myfile.asp".</param>
-        /// <param name="writer">The XmlTextWriter to which you want to save.</param>
-        public void LoadHtmlAsXml(string htmlUrl, XmlTextWriter writer)
+        /// <param name="writer">The XmlWriter to which you want to save.</param>
+        public void LoadHtmlAsXml(string htmlUrl, XmlWriter writer)
         {
+            // XmlTextWriter is internal. Bug or not completed.
+            // So I change it to XmlWriter.
             HtmlDocument doc = Load(htmlUrl);
             doc.Save(writer);
         }
-
+#if NET451
         /// <summary>
         /// Loads an HTML document from an Internet resource and saves it to the specified XmlTextWriter, after an XSLT transformation.
         /// </summary>
@@ -1271,10 +1324,10 @@ namespace HtmlAgilityPack
             xslt.Load(xsltUrl);
             xslt.Transform(doc, xsltArgs, writer);
         }
+#endif
+#endregion
 
-        #endregion
-
-        #region Private Methods
+#region Private Methods
 
         private static void FilePreparePath(string target)
         {
@@ -1293,6 +1346,12 @@ namespace HtmlAgilityPack
             }
         }
 
+        private static DateTime RemoveMilliseconds(DateTimeOffset? offset)
+        {
+            var t = offset ?? DateTimeOffset.Now;
+            return new DateTime(t.Year, t.Month, t.Day, t.Hour, t.Minute, t.Second, 0);
+        }
+
         private static DateTime RemoveMilliseconds(DateTime t)
         {
             return new DateTime(t.Year, t.Month, t.Day, t.Hour, t.Minute, t.Second, 0);
@@ -1303,42 +1362,29 @@ namespace HtmlAgilityPack
         // ReSharper restore UnusedMethodReturnValue.Local
         {
             FilePreparePath(path);
-            FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-            BinaryReader br = null;
-            BinaryWriter bw = null;
             long len = 0;
-            try
-            {
-                br = new BinaryReader(stream);
-                bw = new BinaryWriter(fs);
 
-                byte[] buffer;
-                do
-                {
-                    buffer = br.ReadBytes(streamBufferSize);
-                    len += buffer.Length;
-                    if (buffer.Length > 0)
-                    {
-                        bw.Write(buffer);
-                    }
-                } while (buffer.Length > 0);
-            }
-            finally
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                if (br != null)
+                using (BinaryReader br = new BinaryReader(stream))
                 {
-                    br.Close();
-                }
-                if (bw != null)
-                {
-                    bw.Flush();
-                    bw.Close();
-                }
-                if (fs != null)
-                {
-                    fs.Close();
+                    using (BinaryWriter bw = new BinaryWriter(fs))
+                    {
+                        byte[] buffer;
+                        do
+                        {
+                            buffer = br.ReadBytes(streamBufferSize);
+                            len += buffer.Length;
+                            if (buffer.Length > 0)
+                            {
+                                bw.Write(buffer);
+                            }
+                        } while (buffer.Length > 0);
+                        bw.Flush();
+                    }
                 }
             }
+            
             File.SetLastWriteTime(path, touchDate);
             return len;
         }
@@ -1347,92 +1393,91 @@ namespace HtmlAgilityPack
                                    ICredentials creds)
         {
             string cachePath = null;
-            HttpWebRequest req;
             bool oldFile = false;
-
-            req = WebRequest.Create(uri) as HttpWebRequest;
-            req.Method = method;
-            req.UserAgent = UserAgent;
-            if (proxy != null)
+            HttpStatusCode status;
+            using (var request = new HttpRequestMessage(new HttpMethod(method), uri))
+            using (var handler = new HttpClientHandler())
+            using (var client = new HttpClient(handler))
             {
-                if (creds != null)
-                {
-                    proxy.Credentials = creds;
-                    req.Credentials = creds;
-                }
-                else
-                {
-                    proxy.Credentials = CredentialCache.DefaultCredentials;
-                    req.Credentials = CredentialCache.DefaultCredentials;
-                }
-                req.Proxy = proxy;
-            }
+                client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
 
-            _fromCache = false;
-            _requestDuration = 0;
-            int tc = Environment.TickCount;
-            if (UsingCache)
-            {
-                cachePath = GetCachePath(req.RequestUri);
-                if (File.Exists(cachePath))
+                if (proxy != null)
                 {
-                    req.IfModifiedSince = File.GetLastAccessTime(cachePath);
-                    oldFile = true;
-                }
-            }
-
-            if (_cacheOnly)
-            {
-                if (!File.Exists(cachePath))
-                {
-                    throw new HtmlWebException("File was not found at cache path: '" + cachePath + "'");
+                    if (creds != null)
+                    {
+                        proxy.Credentials = creds;
+                        handler.Credentials = creds;
+                    }
+                    else
+                    {
+                        proxy.Credentials = CredentialCache.DefaultCredentials;
+                        handler.Credentials = CredentialCache.DefaultCredentials;
+                    }
+                    handler.Proxy = proxy;
+                    handler.UseProxy = true;
                 }
 
-                if (path != null)
+                _fromCache = false;
+                _requestDuration = 0;
+                int tc = Environment.TickCount;
+                if (UsingCache)
                 {
-                    IOLibrary.CopyAlways(cachePath, path);
-                    // touch the file
-                    if (cachePath != null) File.SetLastWriteTime(path, File.GetLastWriteTime(cachePath));
-                }
-                _fromCache = true;
-                return HttpStatusCode.NotModified;
-            }
-
-            if (_useCookies)
-            {
-                req.CookieContainer = new CookieContainer();
-            }
-
-            if (PreRequest != null)
-            {
-                // allow our user to change the request at will
-                if (!PreRequest(req))
-                {
-                    return HttpStatusCode.ResetContent;
+                    cachePath = GetCachePath(request.RequestUri);
+                    if (File.Exists(cachePath))
+                    {
+                        client.DefaultRequestHeaders.IfModifiedSince = File.GetLastAccessTime(cachePath);
+                        oldFile = true;
+                    }
                 }
 
-                // dump cookie
-                //				if (_useCookies)
-                //				{
-                //					foreach(Cookie cookie in req.CookieContainer.GetCookies(req.RequestUri))
-                //					{
-                //						HtmlLibrary.Trace("Cookie " + cookie.Name + "=" + cookie.Value + " path=" + cookie.Path + " domain=" + cookie.Domain);
-                //					}
-                //				}
-            }
-
-            HttpWebResponse resp;
-
-            try
-            {
-                resp = req.GetResponse() as HttpWebResponse;
-            }
-            catch (WebException we)
-            {
-                _requestDuration = Environment.TickCount - tc;
-                resp = (HttpWebResponse)we.Response;
-                if (resp == null)
+                if (_cacheOnly)
                 {
+                    if (!File.Exists(cachePath))
+                    {
+                        throw new HtmlWebException("File was not found at cache path: '" + cachePath + "'");
+                    }
+
+                    if (path != null)
+                    {
+                        IOLibrary.CopyAlways(cachePath, path);
+                        // touch the file
+                        if (cachePath != null) File.SetLastWriteTime(path, File.GetLastWriteTime(cachePath));
+                    }
+                    _fromCache = true;
+                    return HttpStatusCode.NotModified;
+                }
+
+                if (_useCookies)
+                {
+                    handler.CookieContainer = new CookieContainer();
+                }
+
+                if (PreRequest != null)
+                {
+                    // allow our user to change the request at will
+                    if (!PreRequest(handler, request))
+                    {
+                        return HttpStatusCode.ResetContent;
+                    }
+
+                    // dump cookie
+                    //				if (_useCookies)
+                    //				{
+                    //					foreach(Cookie cookie in req.CookieContainer.GetCookies(req.RequestUri))
+                    //					{
+                    //						HtmlLibrary.Trace("Cookie " + cookie.Name + "=" + cookie.Value + " path=" + cookie.Path + " domain=" + cookie.Domain);
+                    //					}
+                    //				}
+                }
+
+                HttpResponseMessage response;
+                try
+                {
+                    response = client.SendAsync(request).Result;
+                }
+                catch (HttpRequestException)
+                {
+                    _requestDuration = Environment.TickCount - tc;
                     if (oldFile)
                     {
                         if (path != null)
@@ -1445,80 +1490,81 @@ namespace HtmlAgilityPack
                     }
                     throw;
                 }
-            }
-            catch (Exception)
-            {
+                catch (Exception)
+                {
+                    _requestDuration = Environment.TickCount - tc;
+                    throw;
+                }
+
+                // allow our user to get some info from the response
+                if (PostResponse != null)
+                {
+                    PostResponse(request, response);
+                }
+
                 _requestDuration = Environment.TickCount - tc;
-                throw;
-            }
+                _responseUri = response.RequestMessage.RequestUri;
 
-            // allow our user to get some info from the response
-            if (PostResponse != null)
-            {
-                PostResponse(req, resp);
-            }
+                bool html = IsHtmlContent(response.Content.Headers.ContentType.MediaType);
+                var encoding = response.Content.Headers.ContentEncoding.FirstOrDefault();
+                Encoding respenc = !string.IsNullOrEmpty(encoding)
+                                       ? Encoding.GetEncoding(encoding)
+                                       : null;
 
-            _requestDuration = Environment.TickCount - tc;
-            _responseUri = resp.ResponseUri;
-
-            bool html = IsHtmlContent(resp.ContentType);
-
-            Encoding respenc = !string.IsNullOrEmpty(resp.ContentEncoding)
-                                   ? Encoding.GetEncoding(resp.ContentEncoding)
-                                   : null;
-
-            if (resp.StatusCode == HttpStatusCode.NotModified)
-            {
-                if (UsingCache)
+                if (response.StatusCode == HttpStatusCode.NotModified)
                 {
-                    _fromCache = true;
-                    if (path != null)
+                    if (UsingCache)
                     {
-                        IOLibrary.CopyAlways(cachePath, path);
-                        // touch the file
-                        File.SetLastWriteTime(path, File.GetLastWriteTime(cachePath));
-                    }
-                    return resp.StatusCode;
-                }
-                // this should *never* happen...
-                throw new HtmlWebException("Server has send a NotModifed code, without cache enabled.");
-            }
-            Stream s = resp.GetResponseStream();
-            if (s != null)
-            {
-                if (UsingCache)
-                {
-                    // NOTE: LastModified does not contain milliseconds, so we remove them to the file
-                    SaveStream(s, cachePath, RemoveMilliseconds(resp.LastModified), _streamBufferSize);
-
-                    // save headers
-                    SaveCacheHeaders(req.RequestUri, resp);
-
-                    if (path != null)
-                    {
-                        // copy and touch the file
-                        IOLibrary.CopyAlways(cachePath, path);
-                        File.SetLastWriteTime(path, File.GetLastWriteTime(cachePath));
-                    }
-                }
-                else
-                {
-                    // try to work in-memory
-                    if ((doc != null) && (html))
-                    {
-                        if (respenc != null)
+                        _fromCache = true;
+                        if (path != null)
                         {
-                            doc.Load(s, respenc);
+                            IOLibrary.CopyAlways(cachePath, path);
+                            // touch the file
+                            File.SetLastWriteTime(path, File.GetLastWriteTime(cachePath));
                         }
-                        else
+                        return response.StatusCode;
+                    }
+                    // this should *never* happen...
+                    throw new HtmlWebException("Server has send a NotModifed code, without cache enabled.");
+                }
+                Stream s = response.Content.ReadAsStreamAsync().Result;
+                if (s != null)
+                {
+                    if (UsingCache)
+                    {
+                        // NOTE: LastModified does not contain milliseconds, so we remove them to the file
+                        SaveStream(s, cachePath, RemoveMilliseconds(response.Content.Headers.LastModified), _streamBufferSize);
+
+                        // save headers
+                        SaveCacheHeaders(request.RequestUri, response);
+
+                        if (path != null)
                         {
-                            doc.Load(s, true);
+                            // copy and touch the file
+                            IOLibrary.CopyAlways(cachePath, path);
+                            File.SetLastWriteTime(path, File.GetLastWriteTime(cachePath));
+                        }
+                    }
+                    else
+                    {
+                        // try to work in-memory
+                        if ((doc != null) && (html))
+                        {
+                            if (respenc != null)
+                            {
+                                doc.Load(s, respenc);
+                            }
+                            else
+                            {
+                                doc.Load(s, true);
+                            }
                         }
                     }
                 }
-                resp.Close();
+                status = response.StatusCode;
             }
-            return resp.StatusCode;
+            
+            return status;
         }
 
         private string GetCacheHeader(Uri requestUri, string name, string def)
@@ -1526,7 +1572,7 @@ namespace HtmlAgilityPack
             // note: some headers are collection (ex: www-authenticate)
             // we don't handle that here
             XmlDocument doc = new XmlDocument();
-            doc.Load(GetCacheHeadersPath(requestUri));
+            doc.Load(File.OpenRead(GetCacheHeadersPath(requestUri)));
             XmlNode node =
                 doc.SelectSingleNode("//h[translate(@n, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='" +
                                      name.ToUpper() + "']");
@@ -1543,19 +1589,20 @@ namespace HtmlAgilityPack
             //return Path.Combine(GetCachePath(uri), ".h.xml");
             return GetCachePath(uri) + ".h.xml";
         }
-
+#if NET451
         private bool IsCacheHtmlContent(string path)
         {
             string ct = GetContentTypeForExtension(Path.GetExtension(path), null);
             return IsHtmlContent(ct);
         }
+#endif
 
         private bool IsHtmlContent(string contentType)
         {
             return contentType.ToLower().StartsWith("text/html");
         }
 
-        private HtmlDocument LoadUrl(Uri uri, string method, WebProxy proxy, NetworkCredential creds)
+        private HtmlDocument LoadUrl(Uri uri, string method, IWebProxy proxy, ICredentials creds)
         {
             HtmlDocument doc = new HtmlDocument();
             doc.OptionAutoCloseOnEnd = false;
@@ -1569,31 +1616,30 @@ namespace HtmlAgilityPack
             return doc;
         }
 
-        private void SaveCacheHeaders(Uri requestUri, HttpWebResponse resp)
+        private void SaveCacheHeaders(Uri requestUri, HttpResponseMessage resp)
         {
             // we cache the original headers aside the cached document.
             string file = GetCacheHeadersPath(requestUri);
             XmlDocument doc = new XmlDocument();
             doc.LoadXml("<c></c>");
             XmlNode cache = doc.FirstChild;
-            foreach (string header in resp.Headers)
+            foreach (var header in resp.Headers)
             {
                 XmlNode entry = doc.CreateElement("h");
                 XmlAttribute att = doc.CreateAttribute("n");
-                att.Value = header;
+                att.Value = header.Key;
                 entry.Attributes.Append(att);
 
                 att = doc.CreateAttribute("v");
-                att.Value = resp.Headers[header];
+                att.Value = string.Join(";", header.Value);
                 entry.Attributes.Append(att);
 
                 cache.AppendChild(entry);
             }
-            doc.Save(file);
+            doc.Save(File.OpenWrite(file));
         }
 
-        #endregion
+#endregion
         
     }
 }
-#endif
