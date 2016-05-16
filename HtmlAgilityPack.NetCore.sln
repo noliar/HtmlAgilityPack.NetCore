@@ -3,8 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DevZH.HtmlAgilityPack", "src\DevZH.HtmlAgilityPack\DevZH.HtmlAgilityPack.xproj", "{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{893DE343-F779-4793-8917-784EE5095530}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CCAC58CD-289B-4DEF-941E-4517C7ABB1E9}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		NuGet.Config = NuGet.Config
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29} = {893DE343-F779-4793-8917-784EE5095530}
 	EndGlobalSection
 EndGlobal
