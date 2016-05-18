@@ -24,7 +24,6 @@
     ]
   },
   "dependencies": {
-    "NETStandard.Library": "1.5.0-*"
   },
   "frameworks": {
     "net20": {
@@ -43,6 +42,9 @@
     },
     "net451": {
       "frameworkAssemblies": {
+        "System.Net.Http": {
+          "type": "build"
+        },
         "System.Xml": {
           "type": "build"
         }
@@ -50,6 +52,7 @@
     },
     "netstandard1.3": {
       "dependencies": {
+        "NETStandard.Library": "1.5.0-*",
         "Microsoft.Win32.Registry": "4.0.0-*",
         "System.Collections.NonGeneric": "4.0.1-*",
         "System.Diagnostics.TraceSource": "4.0.0-*",
@@ -60,6 +63,7 @@
     },
     "netstandard1.5": {
       "dependencies": {
+        "NETStandard.Library": "1.5.0-*",
         "Microsoft.Win32.Registry": "4.0.0-*",
         "System.Collections.NonGeneric": "4.0.1-*",
         "System.Diagnostics.TraceSource": "4.0.0-*",
