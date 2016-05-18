@@ -19,6 +19,7 @@
     "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
   },
   "buildOptions": {
+    "keyFile": "../../tools/key.snk",
     "nowarn": [
       "CS0618"
     ]

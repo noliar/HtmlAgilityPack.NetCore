@@ -14,6 +14,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F42B98D9-803F-497B-8D5E-01764710A4F1}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DevZH.HtmlAgilityPack.Test", "test\DevZH.HtmlAgilityPack.Test\DevZH.HtmlAgilityPack.Test.xproj", "{2AE899BB-2833-40B5-9462-64FD7A539B97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{4E546374-E2D6-4491-907C-3062DB931EE3}"
+	ProjectSection(SolutionItems) = preProject
+		tools\key.snk = tools\key.snk
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,11 +33,16 @@ Global
 		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AE899BB-2833-40B5-9462-64FD7A539B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AE899BB-2833-40B5-9462-64FD7A539B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AE899BB-2833-40B5-9462-64FD7A539B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AE899BB-2833-40B5-9462-64FD7A539B97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{10FAD47F-6B2D-4476-BD1E-BC0A50035A29} = {893DE343-F779-4793-8917-784EE5095530}
+		{2AE899BB-2833-40B5-9462-64FD7A539B97} = {F42B98D9-803F-497B-8D5E-01764710A4F1}
 	EndGlobalSection
 EndGlobal
