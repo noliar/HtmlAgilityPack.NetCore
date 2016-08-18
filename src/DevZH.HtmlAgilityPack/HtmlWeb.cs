@@ -9,8 +9,8 @@ using System.Net;
 using System.Security;
 using System.Text;
 using System.Xml;
-using Microsoft.Win32;
 #if NET20 || NET40 || NET451
+using Microsoft.Win32;
 using System.Security.Permissions;
 #endif
 #if NET20 || NET40

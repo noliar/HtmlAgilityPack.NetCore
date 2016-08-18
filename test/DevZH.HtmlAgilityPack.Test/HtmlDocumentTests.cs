@@ -77,6 +77,22 @@ namespace HtmlAgilityPack
         }
 
         [Fact]
+        public void TestLimitDepthParse()
+        {
+            HtmlAgilityPack.HtmlDocument.MaxDepthLevel = 10;
+            var doc = GetMshomeDocument();
+            try
+            {
+                Assert.True(doc.DocumentNode.Descendants().Count() > 0);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.True(e.Message == HtmlAgilityPack.HtmlNode.DepthLevelExceptionMessage);
+            }
+            HtmlAgilityPack.HtmlDocument.MaxDepthLevel = int.MaxValue;
+        }
+
+        [Fact]
         public void TestParseSaveParse()
         {
             var doc = GetMshomeDocument();

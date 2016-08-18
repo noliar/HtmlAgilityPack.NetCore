@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.4.9.1-*",
+  "version": "1.4.9.4-*",
   "description": "HtmlAgilityPack for .NET Core",
   "authors": [ "杜晓宇" ],
   "packOptions": {
@@ -54,8 +54,8 @@
     "netstandard1.3": {
       "dependencies": {
         "NETStandard.Library": "1.6.0-*",
-        "Microsoft.Win32.Registry": "4.0.0-*",
         "System.Collections.NonGeneric": "4.0.1-*",
+        "System.Diagnostics.StackTrace": "4.0.1-*",
         "System.Diagnostics.TraceSource": "4.0.0-*",
         "System.Xml.XPath": "4.0.1-*",
         "System.Xml.XPath.XmlDocument": "4.0.1-*",
@@ -65,8 +65,8 @@
     "netstandard1.5": {
       "dependencies": {
         "NETStandard.Library": "1.5.0-*",
-        "Microsoft.Win32.Registry": "4.0.0-*",
         "System.Collections.NonGeneric": "4.0.1-*",
+        "System.Diagnostics.StackTrace": "4.0.1-*",
         "System.Diagnostics.TraceSource": "4.0.0-*",
         "System.Xml.XPath": "4.0.1-*",
         "System.Xml.XPath.XmlDocument": "4.0.1-*",

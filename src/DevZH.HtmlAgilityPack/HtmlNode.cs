@@ -14,9 +14,13 @@ namespace HtmlAgilityPack
 	[DebuggerDisplay("Name: {OriginalName}")]
 	public partial class HtmlNode
 	{
-		#region Fields
+        #region Consts
+        internal const string DepthLevelExceptionMessage = "The document is too complex to parse";
+        #endregion
 
-		internal HtmlAttributeCollection _attributes;
+        #region Fields
+
+        internal HtmlAttributeCollection _attributes;
 		internal HtmlNodeCollection _childnodes;
 		internal HtmlNode _endnode;
 
@@ -67,14 +71,14 @@ namespace HtmlAgilityPack
 		/// </summary>
 		public static Dictionary<string, HtmlElementFlag> ElementsFlags;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		/// <summary>
-		/// Initialize HtmlNode. Builds a list of all tags that have special allowances
-		/// </summary>
-		static HtmlNode()
+        /// <summary>
+        /// Initialize HtmlNode. Builds a list of all tags that have special allowances
+        /// </summary>
+        static HtmlNode()
 		{
 			// tags whose content may be anything
 			ElementsFlags = new Dictionary<string, HtmlElementFlag>();
@@ -906,20 +910,29 @@ namespace HtmlAgilityPack
 
 
 
-		/// <summary>
-		/// Gets all Descendant nodes for this node and each of child nodes
-		/// </summary>
-		/// <returns></returns>
-		[Obsolete("Use Descendants() instead, the results of this function will change in a future version")]
-		public IEnumerable<HtmlNode> DescendantNodes()
+        /// <summary>
+        /// Gets all Descendant nodes for this node and each of child nodes
+        /// </summary>
+        /// <param name="level">The depth level of the node to parse in the html tree</param>
+        /// <returns>the current element as an HtmlNode</returns>
+        [Obsolete("Use Descendants() instead, the results of this function will change in a future version")]
+		public IEnumerable<HtmlNode> DescendantNodes(int level = 0)
 		{
-			foreach (HtmlNode node in ChildNodes)
-			{
-				yield return node;
-				foreach (HtmlNode descendant in node.DescendantNodes())
-					yield return descendant;
-			}
-		}
+            if (level > HtmlDocument.MaxDepthLevel)
+            {
+                throw new ArgumentException(HtmlNode.DepthLevelExceptionMessage);
+            }
+
+            foreach (HtmlNode node in ChildNodes)
+            {
+                yield return node;
+
+                foreach (HtmlNode descendant in node.DescendantNodes(level + 1))
+                {
+                    yield return descendant;
+                }
+            }
+        }
 
 		/// <summary>
 		/// Returns a collection of all descendant nodes of this element, in document order
@@ -935,15 +948,23 @@ namespace HtmlAgilityPack
 		/// Gets all Descendant nodes in enumerated list
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<HtmlNode> Descendants()
+		public IEnumerable<HtmlNode> Descendants(int level = 0)
 		{
-			foreach (HtmlNode node in ChildNodes)
-			{
-				yield return node;
-				foreach (HtmlNode descendant in node.Descendants())
-					yield return descendant;
-			}
-		}
+            if (level > HtmlDocument.MaxDepthLevel)
+            {
+                throw new ArgumentException(HtmlNode.DepthLevelExceptionMessage);
+            }
+
+            foreach (HtmlNode node in ChildNodes)
+            {
+                yield return node;
+
+                foreach (HtmlNode descendant in node.Descendants(level + 1))
+                {
+                    yield return descendant;
+                }
+            }
+        }
 
 		/// <summary>
 		/// Get all descendant nodes with matching name
@@ -1390,20 +1411,26 @@ namespace HtmlAgilityPack
 			return att;
 		}
 
-		/// <summary>
-		/// Saves all the children of the node to the specified TextWriter.
-		/// </summary>
-		/// <param name="outText">The TextWriter to which you want to save.</param>
-		public void WriteContentTo(TextWriter outText)
+        /// <summary>
+        /// Saves all the children of the node to the specified TextWriter.
+        /// </summary>
+        /// <param name="outText">The TextWriter to which you want to save.</param>
+        /// <param name="level">Identifies the level we are in starting at root with 0</param>
+        public void WriteContentTo(TextWriter outText, int level = 0)
 		{
-			if (_childnodes == null)
+            if (level > HtmlDocument.MaxDepthLevel)
+            {
+                throw new ArgumentException(HtmlNode.DepthLevelExceptionMessage);
+            }
+
+            if (_childnodes == null)
 			{
 				return;
 			}
 
 			foreach (HtmlNode node in _childnodes)
 			{
-				node.WriteTo(outText);
+				node.WriteTo(outText, level + 1);
 			}
 		}
 
@@ -1419,11 +1446,12 @@ namespace HtmlAgilityPack
 			return sw.ToString();
 		}
 
-		/// <summary>
-		/// Saves the current node to the specified TextWriter.
-		/// </summary>
-		/// <param name="outText">The TextWriter to which you want to save.</param>
-		public void WriteTo(TextWriter outText)
+        /// <summary>
+        /// Saves the current node to the specified TextWriter.
+        /// </summary>
+        /// <param name="outText">The TextWriter to which you want to save.</param>
+        /// <param name="level">identifies the level we are in starting at root with 0</param>
+        public void WriteTo(TextWriter outText, int level = 0)
 		{
 			string html;
 			switch (_nodetype)
@@ -1456,13 +1484,13 @@ namespace HtmlAgilityPack
 									if (_ownerdocument.OptionOutputUpperCase)
 									{
 										outText.Write("<SPAN>");
-										WriteContentTo(outText);
+										WriteContentTo(outText, level);
 										outText.Write("</SPAN>");
 									}
 									else
 									{
 										outText.Write("<span>");
-										WriteContentTo(outText);
+										WriteContentTo(outText, level);
 										outText.Write("</span>");
 									}
 									break;
@@ -1470,7 +1498,7 @@ namespace HtmlAgilityPack
 							}
 						}
 					}
-					WriteContentTo(outText);
+					WriteContentTo(outText, level);
 					break;
 
 				case HtmlNodeType.Text:
@@ -1519,12 +1547,12 @@ namespace HtmlAgilityPack
 						{
 							if (HasChildNodes)
 								// child must be a text
-								ChildNodes[0].WriteTo(outText);
+								ChildNodes[0].WriteTo(outText, level);
 
 							outText.Write("\r\n//]]>//\r\n");
 						}
 						else
-							WriteContentTo(outText);
+							WriteContentTo(outText, level);
 
 						outText.Write("</" + name);
 						if (!_ownerdocument.OptionOutputAsXml)
@@ -1658,9 +1686,14 @@ namespace HtmlAgilityPack
 			}
 		}
 
-		internal void CloseNode(HtmlNode endnode)
+		internal void CloseNode(HtmlNode endnode, int level = 0)
 		{
-			if (!_ownerdocument.OptionAutoCloseOnEnd)
+            if (level > HtmlDocument.MaxDepthLevel)
+            {
+                throw new ArgumentException(HtmlNode.DepthLevelExceptionMessage);
+            }
+
+            if (!_ownerdocument.OptionAutoCloseOnEnd)
 			{
 				// close all children
 				if (_childnodes != null)
@@ -1673,7 +1706,7 @@ namespace HtmlAgilityPack
 						// create a fake closer node
 						HtmlNode close = new HtmlNode(NodeType, _ownerdocument, -1);
 						close._endnode = close;
-						child.CloseNode(close);
+						child.CloseNode(close, level + 1);
 					}
 				}
 			}

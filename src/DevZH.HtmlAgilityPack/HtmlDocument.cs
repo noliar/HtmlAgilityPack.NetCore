@@ -13,9 +13,14 @@ namespace HtmlAgilityPack
 	/// </summary>
 	public partial class HtmlDocument
 	{
-		#region Fields
+        #region Fields
 
-		private int _c;
+        /// <summary>
+        /// Defines the max level we would go deep into the html document
+        /// </summary>
+        private static int _maxDepthLevel = int.MaxValue;
+
+        private int _c;
 		private Crc32 _crc32;
 		private HtmlAttribute _currentattribute;
 		private HtmlNode _currentnode;
@@ -155,14 +160,24 @@ namespace HtmlAgilityPack
 
 		}
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the document CRC32 checksum if OptionComputeChecksum was set to true before parsing, 0 otherwise.
-		/// </summary>
-		public int CheckSum
+        /// <summary>
+        /// Defines the max level we would go deep into the html document. If this depth level is exceeded, and exception is
+        /// thrown.
+        /// </summary>
+        public static int MaxDepthLevel
+        {
+            get { return _maxDepthLevel; }
+            set { _maxDepthLevel = value; }
+        }
+
+        /// <summary>
+        /// Gets the document CRC32 checksum if OptionComputeChecksum was set to true before parsing, 0 otherwise.
+        /// </summary>
+        public int CheckSum
 		{
 			get { return _crc32 == null ? 0 : (int)_crc32.CheckSum; }
 		}

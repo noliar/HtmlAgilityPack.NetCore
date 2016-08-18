@@ -721,7 +721,7 @@ namespace HtmlAgilityPack
                 return;
             }
 #if NET20 || NET40 || NET451
-            StackFrame sf = new StackFrame(1, true);
+            StackFrame sf = new StackFrame(1);
             string name = sf.GetMethod().Name;
 #else
             string name = string.Empty;

@@ -1,7 +1,10 @@
 ﻿{
   "version": "1.0.0-*",
   "buildOptions": {
-    "keyFile": "../../tools/key.snk"
+    "keyFile": "../../tools/key.snk",
+    "copyToOutput": [
+      "files/mshome.htm"
+    ]
   },
   "testRunner": "xunit",
   "dependencies": {
