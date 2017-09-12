@@ -1,3 +1,6 @@
+# This project is dead.
+You can read the source code of HAP on [home repo](https://github.com/zzzprojects/html-agility-pack).
+
 # HtmlAgilityPack for .NET Core  [![License][License]](LICENSE-2.0.txt)
 
 This project is a port of [HtmlAgilityPack trunk](https://htmlagilitypack.codeplex.com/SourceControl/latest#Trunk/).
